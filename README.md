@@ -1,4 +1,4 @@
-# KSC(KISTI Neuron) 환경 구축 전달 패키지 — 2026-08-26
+# KSC(KISTI Neuron) 환경 구축 — 2026-08-26
 
 MolE, tabfm, Uni-Mol 세 모델을 KISTI Neuron 슈퍼컴퓨터(KSC, Slurm 기반)에서 GPU로 돌릴 수 있도록
 환경을 구축하고, 실제로 제출해서 끝까지 테스트 성공까지 확인한 결과물입니다.
