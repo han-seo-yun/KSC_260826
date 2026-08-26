@@ -1,0 +1,92 @@
+#!/bin/bash
+# =============================================================================
+# 이 시스템(KISTI Neuron)은 순수 Slurm이다. `qsub`는 sbatch를 그대로 호출만
+# 하고 `#PBS` 지시어는 해석하지 않으므로(그냥 주석으로 무시됨) `#SBATCH`로 쓴다.
+# (showappl 확인, 2026-08-21: --comment="field=<field>;appl=<program>" 필수)
+# =============================================================================
+#SBATCH --job-name=mole_pretrain
+#SBATCH --partition=cas_v100_2
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --time=24:00:00
+#SBATCH --output=mole_pretrain.log
+#SBATCH --error=mole_pretrain.log
+#SBATCH --comment="field=chem;appl=pytorch"
+#SBATCH --mail-user=hsy071322@naver.com
+#SBATCH --mail-type=END,FAIL
+
+# ↓ qsub가 "Account" 관련 에러로 거부되면 아래 주석을 풀고 본인 계정값 채울 것.
+##SBATCH --account=etc
+
+set -euo pipefail
+cd "$SLURM_SUBMIT_DIR"
+
+# --- 사용자별로 바꿀 값 ------------------------------------------------------
+# home 쿼터가 작은 HPC 환경 관례상 conda env는 반드시 scratch에 -p 로 만든다:
+#   conda env create -f environment.yaml -p /scratch/$USER/envs/mole
+ENV_PREFIX="${ENV_PREFIX:-/scratch/$USER/envs/mole}"
+# ---------------------------------------------------------------------------
+
+# 1) CUDA 모듈 로드
+#    KSC에는 CUDA 11.x 모듈이 아예 없다 (module avail cuda 확인, 2026-08-13:
+#    12.1 / 12.2 / 12.3 / 12.4 / 12.4.1 / 12.5 / 12.8 / 12.9 / 12.9.1 / 13.0.2).
+#    environment.yaml 도 pytorch-cuda=12.1 로 맞춰뒀으므로 여기서도 12.1 로드.
+#    (2026-08-22 smoke test 확인: cuda/12.1은 deprecated돼서 cuda/12.4.1로 자동
+#    리다이렉트됨 -- torch가 cu121로 빌드돼 있어도 driver/toolkit 12.4는 상위
+#    호환이라 문제 없음. 경고만 뜸.)
+module load cuda/12.1
+
+# 2) conda 환경 활성화 (GPU용 environment.yaml 로 만든 환경)
+#    *** `module load conda/pytorch_2.9.1_cuda12`는 conda 도구 자체가 아니라
+#    미리 만들어진 특정 환경의 bin/만 PATH에 얹어준다 -- conda 명령이 없다
+#    (2026-08-22 실제 확인: "conda: command not found"). conda 명령은
+#    /apps/applications/Miniconda/<버전>/bin/conda 에 실제로 존재하므로
+#    그 base를 직접 source 한다 (module load 불필요).
+CONDA_BASE="${CONDA_BASE:-/apps/applications/Miniconda/25.11.1}"
+source "$CONDA_BASE/etc/profile.d/conda.sh"
+# conda의 activate.d 훅(예: MKL activate 스크립트)은 set -u에 안전하게
+# 작성돼 있지 않아 "MKL_INTERFACE_LAYER: unbound variable"로 죽는 경우가
+# 있다 (2026-08-22 실제 확인, job 890315). activate 호출 구간만 set -u 해제.
+set +u
+conda activate "$ENV_PREFIX"
+set -u
+
+# 3) GPU 인식 확인
+python -c "import torch; print('CUDA available:', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else '')"
+
+# 3-1) torch.cuda.is_available()==True 여도 실제 커널이 없는 빌드일 수 있다
+# (2026-08-23 Uni-Mol job 890322에서 실제 확인: V100 CC 7.0인데 torch가 최신
+# cu130 빌드라 "no kernel image is available for execution on the device"로
+# 죽음). 24시간짜리 pretrain 들어가기 전에 실제 CUDA 연산을 한 번 돌려서 검증.
+python - <<'PY'
+import sys, torch
+try:
+    (torch.zeros(1, device="cuda") + 1).cpu()
+except Exception as e:
+    sys.exit(f"!!! torch가 이 GPU용 CUDA 커널을 갖고 있지 않습니다: {e}\n"
+             "environment.yaml의 pytorch-cuda 버전과 실제 설치된 torch 빌드를 확인하세요.")
+print("torch CUDA 커널 정상 동작 확인")
+PY
+
+# 4) 실제 pretrain
+#    config.yaml 은 pubchem_100k_random.txt(10만개) + gpu: cuda:0 로 이미 맞춰져 있다.
+#    단, config.yaml 의 `num_workers: 100` 은 위 --cpus-per-task(=4)보다 훨씬 커서
+#    DataLoader worker가 코어 수를 크게 초과한다 -> 스래싱/메모리 폭증 위험.
+#    cpus-per-task 에 맞춘 사본을 만들어 그걸로 학습한다. (숫자를 바꾸면 아래도 같이 수정)
+NCPUS=4
+sed "s/^  num_workers: .*/  num_workers: ${NCPUS}/" config.yaml > config_ksc.yaml
+grep -n "num_workers\|data_path\|gpu:" config_ksc.yaml   # 실제 적용값 로그에 남기기
+
+#    주의: pretrain.py 는 --config 가 주어지면 나머지 커맨드라인 인자를 전부 무시한다.
+#    (예: --gpu cuda:0 은 무시되고 config 의 `gpu:` 값이 쓰인다)
+python pretrain.py --config config_ksc.yaml
+
+# 5) (선택) 학습된 표현(embedding) 추출
+#    주의: 이 스크립트의 인자 이름은 --config 가 아니라 --config_yaml 이고,
+#    전용 설정 파일은 config_representation.yaml 이다 (config.yaml 아님).
+#    config_representation.yaml 의 `representation:` 는 기본값이 배포 가중치
+#    (gin_concat_R1000_E8000_lambda0.0001) 이므로, 방금 4)에서 학습한 모델의
+#    ckpt 디렉토리 이름으로 바꾸거나 Zenodo 가중치를 미리 받아둬야 한다.
+# python gather_representation.py --config_yaml config_representation.yaml

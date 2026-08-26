@@ -1,0 +1,113 @@
+Fetching 134 files:   0%|          | 0/134 [00:00<?, ?it/s]Fetching 134 files: 100%|██████████| 134/134 [00:00<00:00, 1720.56it/s]
+WARNING:absl:CheckpointManagerOptions.read_only=True, setting save_interval_steps=0.
+WARNING:absl:CheckpointManagerOptions.read_only=True, setting create=False.
+WARNING:absl:Given directory is read only=/scratch/r978a07/hf_cache/hub/models--google--tabfm-1.0.0-jax/snapshots/d5e74033fcf257699fab013e2cdd7edf424ff904/classification/orbax
+W0823 06:40:33.720887  750654 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 1.50GiB (rounded to 1610612736)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0823 06:40:33.721362  750654 bfc_allocator.cc:525] **_******************************************************************************************_______
+Traceback (most recent call last):
+  File "/scratch/r978a07/ksc-models/tabfm/examples/classification_example.py", line 60, in <module>
+    predictions = run_example()
+                  ^^^^^^^^^^^^^
+  File "/scratch/r978a07/ksc-models/tabfm/examples/classification_example.py", line 26, in run_example
+    model = tabfm.tabfm_v1_0_0_jax.load(model_type="classification")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/tabfm_v1_0_0.py", line 279, in load
+    result = TabFM_HF.from_pretrained(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/huggingface_hub/hub_mixin.py", line 561, in from_pretrained
+    instance = cls._from_pretrained(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/tabfm_v1_0_0.py", line 216, in _from_pretrained
+    return _restore_from_dir(model, checkpoint_path, model_type, step)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/tabfm_v1_0_0.py", line 131, in _restore_from_dir
+    restored = checkpoint_manager.restore(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/checkpoint_manager.py", line 1759, in restore
+    restored = self._checkpointer.restore(restore_directory, args=args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/checkpointers/async_checkpointer.py", line 635, in restore
+    return super().restore(directory, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 329, in restore
+    restored = self._restore(directory, args=ckpt_args)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/checkpointers/checkpointer.py", line 343, in _restore
+    return self._handler.restore(directory, args=args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/handlers/composite_checkpoint_handler.py", line 860, in restore
+    restored[item_name] = handler.restore(
+                          ^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/handlers/standard_checkpoint_handler.py", line 265, in restore
+    return self._impl.restore(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/handlers/pytree_checkpoint_handler.py", line 871, in restore
+    return self._handler_impl.restore(directory, args=args)  # pyrefly: ignore[bad-argument-type]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 1089, in restore
+    restored_item = asyncio_utils.run_sync(
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 100, in run_sync
+    return asyncio.run(_coro_with_registration())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/asyncio_utils.py", line 91, in _coro_with_registration
+    return await coro
+           ^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/handlers/base_pytree_checkpoint_handler.py", line 814, in _maybe_deserialize
+    deserialized_batches = await self._async_io_engine.execute_restore(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/async_io_engine.py", line 239, in execute_restore
+    deserialized_batches = await asyncio.gather(*deserialized_batches_ops)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1602, in deserialize
+    ret = await _deserialize_arrays(
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1099, in _deserialize_arrays
+    (ret, logical_bytes), array_metadatas = await asyncio.gather(
+                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/jax_array_handlers.py", line 1090, in _async_deserialize
+    results = await asyncio.gather(*deserialize_ops)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 440, in async_deserialize
+    return await _read_and_create_array(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 380, in _read_and_create_array
+    shards_and_bytes_read = await asyncio.gather(*read_array_coros)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/orbax/checkpoint/_src/serialization/serialization.py", line 334, in _read_array_index_and_device_put
+    result.append(jax.device_put(shard, Format(dll, sharding)))  # pytype: disable=wrong-arg-types
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/jax/_src/api.py", line 2118, in device_put
+    out_flat = dispatch._batched_device_put_impl(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/jax/_src/dispatch.py", line 626, in _batched_device_put_impl
+    shard_arg_results = pxla.shard_args(dsa_shardings, [None] * len(dsa_xs),
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/jax/_src/profiler.py", line 420, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py", line 103, in shard_args
+    return handler([arg], shardings, layouts, copy_semantics)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py", line 192, in _shard_np_array
+    results.append(batched_device_put(aval, sharding, shards, devices))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py", line 233, in batched_device_put
+    return xc.batched_device_put(aval, sharding, xs, list(devices), committed,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 1.50GiB. [tf-allocator-allocation-error='']

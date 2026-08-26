@@ -1,0 +1,297 @@
+E0824 12:55:18.105070  260093 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+E0824 12:55:31.636322  260131 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+E0824 12:56:30.858179  260424 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+Fetching 134 files:   0%|          | 0/134 [00:00<?, ?it/s]Fetching 134 files: 100%|██████████| 134/134 [00:00<00:00, 1432.33it/s]
+WARNING:absl:CheckpointManagerOptions.read_only=True, setting save_interval_steps=0.
+WARNING:absl:CheckpointManagerOptions.read_only=True, setting create=False.
+WARNING:absl:Given directory is read only=/scratch/r978a07/hf_cache/hub/models--google--tabfm-1.0.0-jax/snapshots/d5e74033fcf257699fab013e2cdd7edf424ff904/classification/orbax
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+E0824 12:57:50.918155  262086 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+Fetching 140 files:   0%|          | 0/140 [00:00<?, ?it/s]Fetching 140 files: 100%|██████████| 140/140 [00:00<00:00, 1698.68it/s]
+WARNING:absl:CheckpointManagerOptions.read_only=True, setting save_interval_steps=0.
+WARNING:absl:CheckpointManagerOptions.read_only=True, setting create=False.
+WARNING:absl:Given directory is read only=/scratch/r978a07/hf_cache/hub/models--google--tabfm-1.0.0-jax/snapshots/d5e74033fcf257699fab013e2cdd7edf424ff904/regression/orbax
+test_classifier_batch_forward (tabfm.src.classifier_and_regressor_test.BatchForwardTest.test_classifier_batch_forward)
+tabfm.src.classifier_and_regressor_test.BatchForwardTest.test_classifier_batch_forward ... E0824 12:58:46.176888  263728 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+ok
+test_regressor_batch_forward_cross_entropy (tabfm.src.classifier_and_regressor_test.BatchForwardTest.test_regressor_batch_forward_cross_entropy)
+tabfm.src.classifier_and_regressor_test.BatchForwardTest.test_regressor_batch_forward_cross_entropy ... ok
+test_regressor_batch_forward_rmse (tabfm.src.classifier_and_regressor_test.BatchForwardTest.test_regressor_batch_forward_rmse)
+tabfm.src.classifier_and_regressor_test.BatchForwardTest.test_regressor_batch_forward_rmse ... ok
+test_calibration_binary (tabfm.src.classifier_and_regressor_test.CalibrationTest.test_calibration_binary)
+tabfm.src.classifier_and_regressor_test.CalibrationTest.test_calibration_binary ... ok
+test_calibration_multiclass (tabfm.src.classifier_and_regressor_test.CalibrationTest.test_calibration_multiclass)
+tabfm.src.classifier_and_regressor_test.CalibrationTest.test_calibration_multiclass ... ok
+test_classifier_fit_duplicate_column_names_raises_clear_error (tabfm.src.classifier_and_regressor_test.ColumnNameRobustnessTest.test_classifier_fit_duplicate_column_names_raises_clear_error)
+tabfm.src.classifier_and_regressor_test.ColumnNameRobustnessTest.test_classifier_fit_duplicate_column_names_raises_clear_error ... ok
+test_datetime_column_with_non_string_name (tabfm.src.classifier_and_regressor_test.ColumnNameRobustnessTest.test_datetime_column_with_non_string_name)
+tabfm.src.classifier_and_regressor_test.ColumnNameRobustnessTest.test_datetime_column_with_non_string_name ... ok
+test_duplicate_column_names_raise_a_clear_error (tabfm.src.classifier_and_regressor_test.ColumnNameRobustnessTest.test_duplicate_column_names_raise_a_clear_error)
+tabfm.src.classifier_and_regressor_test.ColumnNameRobustnessTest.test_duplicate_column_names_raise_a_clear_error ... ok
+test_detects_datetime_in_object_and_string_dtypes (tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_detects_datetime_in_object_and_string_dtypes)
+tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_detects_datetime_in_object_and_string_dtypes ... ok
+test_mostly_non_date_column_not_detected (tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_mostly_non_date_column_not_detected)
+tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_mostly_non_date_column_not_detected ... ok
+test_non_datetime_text_not_detected (tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_non_datetime_text_not_detected)
+tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_non_datetime_text_not_detected ... ok
+test_partially_date_column_is_detected (tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_partially_date_column_is_detected)
+tabfm.src.classifier_and_regressor_test.DatetimeDetectionTest.test_partially_date_column_is_detected ... ok
+test_max_num_features (tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_max_num_features)
+tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_max_num_features ... ok
+test_permute_categorical_application (tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_permute_categorical_application)
+tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_permute_categorical_application ... ok
+test_permute_categorical_false (tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_permute_categorical_false)
+tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_permute_categorical_false ... ok
+test_permute_categorical_structure (tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_permute_categorical_structure)
+tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_permute_categorical_structure ... ok
+test_row_and_col_subsampling (tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_row_and_col_subsampling)
+tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_row_and_col_subsampling ... ok
+test_variable_crosses_shapes (tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_variable_crosses_shapes)
+tabfm.src.classifier_and_regressor_test.EnsembleGeneratorTest.test_variable_crosses_shapes ... ok
+test_classifier_ensemble_preset (tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_classifier_ensemble_preset)
+tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_classifier_ensemble_preset ... ok
+test_default_mode_keeps_features_off (tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_default_mode_keeps_features_off)
+tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_default_mode_keeps_features_off ... ok
+test_ensemble_overrides_take_precedence (tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_ensemble_overrides_take_precedence)
+tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_ensemble_overrides_take_precedence ... ok
+test_regressor_ensemble_preset (tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_regressor_ensemble_preset)
+tabfm.src.classifier_and_regressor_test.EnsemblePresetTest.test_regressor_ensemble_preset ... ok
+test_classifier_pickle_round_trip_after_predict (tabfm.src.classifier_and_regressor_test.EstimatorPickleTest.test_classifier_pickle_round_trip_after_predict)
+tabfm.src.classifier_and_regressor_test.EstimatorPickleTest.test_classifier_pickle_round_trip_after_predict ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_regressor_pickle_round_trip_after_predict (tabfm.src.classifier_and_regressor_test.EstimatorPickleTest.test_regressor_pickle_round_trip_after_predict)
+tabfm.src.classifier_and_regressor_test.EstimatorPickleTest.test_regressor_pickle_round_trip_after_predict ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_regressor_fit_with_pandas_output_config (tabfm.src.classifier_and_regressor_test.GlobalPandasOutputTest.test_regressor_fit_with_pandas_output_config)
+tabfm.src.classifier_and_regressor_test.GlobalPandasOutputTest.test_regressor_fit_with_pandas_output_config ... /scratch/r978a07/envs/tabfm/lib/python3.11/site-packages/sklearn/preprocessing/_function_transformer.py:305: UserWarning: When `set_output` is configured to be 'pandas', `func` should return a pandas DataFrame to follow the `set_output` API  or `feature_names_out` should be defined.
+  warnings.warn(warn_msg.format("pandas"))
+ok
+test_classes_are_alphabetical (tabfm.src.classifier_and_regressor_test.LabelEncodingTest.test_classes_are_alphabetical)
+tabfm.src.classifier_and_regressor_test.LabelEncodingTest.test_classes_are_alphabetical ... ok
+test_classifier_predict_oof_proba_raises_on_regression_model (tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_classifier_predict_oof_proba_raises_on_regression_model)
+tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_classifier_predict_oof_proba_raises_on_regression_model ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_classifier_predict_proba_raises_on_regression_model (tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_classifier_predict_proba_raises_on_regression_model)
+tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_classifier_predict_proba_raises_on_regression_model ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_regressor_predict_oof_raises_on_classification_model (tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_regressor_predict_oof_raises_on_classification_model)
+tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_regressor_predict_oof_raises_on_classification_model ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_regressor_predict_raises_on_classification_model (tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_regressor_predict_raises_on_classification_model)
+tabfm.src.classifier_and_regressor_test.ModelTypeMismatchTest.test_regressor_predict_raises_on_classification_model ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_predict_before_fit_raises_not_fitted (tabfm.src.classifier_and_regressor_test.NotFittedTest.test_predict_before_fit_raises_not_fitted)
+tabfm.src.classifier_and_regressor_test.NotFittedTest.test_predict_before_fit_raises_not_fitted ... ok
+test_classifier_predict_oof_proba (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_classifier_predict_oof_proba)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_classifier_predict_oof_proba ... ok
+test_classifier_predict_oof_proba_with_subsampling (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_classifier_predict_oof_proba_with_subsampling)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_classifier_predict_oof_proba_with_subsampling ... ok
+test_regressor_feature_crosses (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_feature_crosses)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_feature_crosses ... ok
+test_regressor_nnls_blending (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_nnls_blending)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_nnls_blending ... ok
+test_regressor_predict_oof (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_predict_oof)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_predict_oof ... ok
+test_regressor_sqrt_schedule (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_sqrt_schedule)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_sqrt_schedule ... ok
+test_regressor_svd_features (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_svd_features)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_svd_features ... ok
+test_regressor_variable_crosses_predict_flow (tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_variable_crosses_predict_flow)
+tabfm.src.classifier_and_regressor_test.OOFPredictionTest.test_regressor_variable_crosses_predict_flow ... ok
+test_average_logits_and_enable_nnls_raises (tabfm.src.classifier_and_regressor_test.StackingTest.test_average_logits_and_enable_nnls_raises)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_average_logits_and_enable_nnls_raises ... ok
+test_classifier_crosses_and_svd (tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_crosses_and_svd)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_crosses_and_svd ... /scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1706: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  '...i,if->...if', features_expanded_raw, self.fourier_frequencies.value
+/scratch/r978a07/ksc-models/tabfm/tabfm/src/jax/model.py:1730: DeprecationWarning: '.value' access is now deprecated. For Variable[Array] instances use:
+
+  variable[...]
+
+For other Variable types use:
+
+  variable.get_value()
+
+  self.fourier_frequencies_cat.value,
+ok
+test_classifier_nnls_and_calibration (tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_nnls_and_calibration)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_nnls_and_calibration ... ok
+test_classifier_nnls_and_calibration_small_dataset (tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_nnls_and_calibration_small_dataset)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_nnls_and_calibration_small_dataset ... ok
+test_classifier_nnls_blending (tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_nnls_blending)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_classifier_nnls_blending ... ok
+test_max_num_rows (tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows ... ok
+test_max_num_rows_greater_than_N_with_enable_nnls_uses_cv (tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_greater_than_N_with_enable_nnls_uses_cv)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_greater_than_N_with_enable_nnls_uses_cv ... ok
+test_max_num_rows_with_enable_nnls_classifier (tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_with_enable_nnls_classifier)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_with_enable_nnls_classifier ... ok
+test_max_num_rows_with_enable_nnls_regressor (tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_with_enable_nnls_regressor)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_with_enable_nnls_regressor ... ok
+test_max_num_rows_with_enable_nnls_too_small_raises (tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_with_enable_nnls_too_small_raises)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_max_num_rows_with_enable_nnls_too_small_raises ... ok
+test_min_rows_for_single_val_split_classifier (tabfm.src.classifier_and_regressor_test.StackingTest.test_min_rows_for_single_val_split_classifier)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_min_rows_for_single_val_split_classifier ... ok
+test_min_rows_for_single_val_split_regressor (tabfm.src.classifier_and_regressor_test.StackingTest.test_min_rows_for_single_val_split_regressor)
+tabfm.src.classifier_and_regressor_test.StackingTest.test_min_rows_for_single_val_split_regressor ... ok
+
+----------------------------------------------------------------------
+Ran 51 tests in 80.270s
+
+OK

@@ -1,0 +1,7 @@
+==========================================
+SLURM_JOB_ID = 891712
+SLURM_NODELIST = gpu26
+==========================================
+CUDA available: True Tesla V100-PCIE-16GB
+torch CUDA 커널 정상 동작 확인
+=== SMOKETEST OK ===

@@ -1,0 +1,87 @@
+#!/bin/bash
+# =============================================================================
+# KSC 제출 헤더 검증용 최소 테스트 잡 (5분 이내 종료) — Slurm(sbatch) 버전
+#
+# 목적: 24시간짜리 실제 학습을 던지기 전에, 아래 것들이 맞는지 먼저 확인한다.
+#   - partition 이름 / 자원 요청 문법이 스케줄러에 받아들여지는가
+#   - walltime 이 partition 최대치를 넘지 않는가
+#   - --comment="field=<field>;appl=<program>" 지정이 맞는가 (이 시스템 필수 항목)
+#   - 계산 노드에서 conda 활성화가 되는가
+#   - 계산 노드에서 GPU 가 실제로 보이는가
+#   - 계산 노드에 외부 네트워크가 있는가 (pip install 가능 여부)
+#
+# 이 시스템(KISTI Neuron, glogin01-03)은 순수 Slurm이다. `qsub`는 내부적으로
+# `sbatch`를 그대로 호출만 할 뿐 `#PBS` 지시어를 해석하지 않으므로(주석으로 무시됨)
+# 반드시 `#SBATCH`로 써야 한다. (showappl 확인, 2026-08-21)
+#
+# 사용법:
+#   qsub ksc_smoketest.pbs      # 내부적으로 sbatch 호출. 직접 sbatch도 가능.
+#   qstat -u $USER               # 상태 확인
+#   cat ksc_smoketest.log        # 완료 후 결과 확인
+# =============================================================================
+#SBATCH --job-name=ksc_smoketest
+#SBATCH --partition=cas_v100_2
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --time=00:10:00
+#SBATCH --output=ksc_smoketest.log
+#SBATCH --error=ksc_smoketest.log
+#SBATCH --comment="field=chem;appl=misc"
+
+# ↓ qsub가 "Account" 관련 에러로 거부되면 아래 주석을 풀고 본인 계정값 채울 것.
+##SBATCH --account=etc
+
+set -x   # 실패해도 계속 진행해서 최대한 많은 정보를 로그에 남긴다
+
+echo "=============== 1) 잡/노드 기본 정보 ==============="
+date
+hostname
+echo "SLURM_SUBMIT_DIR = $SLURM_SUBMIT_DIR"
+echo "할당된 노드: $SLURM_JOB_NODELIST"
+echo "코어 수: $(nproc)"
+free -g | head -2
+
+cd "$SLURM_SUBMIT_DIR" || exit 1
+
+echo "=============== 2) GPU 하드웨어 ==============="
+nvidia-smi || echo "!!! nvidia-smi 실패 - 이 노드에 GPU가 없거나 드라이버 문제"
+
+echo "=============== 3) 모듈 ==============="
+module load cuda/12.1 && echo "cuda/12.1 로드 성공" || echo "!!! cuda/12.1 로드 실패"
+module list 2>&1
+echo "CUDA_HOME = ${CUDA_HOME:-(설정 안 됨)}"
+nvcc --version 2>&1 | tail -2
+
+echo "=============== 4) conda ==============="
+if command -v conda >/dev/null 2>&1; then
+  source "$(conda info --base)/etc/profile.d/conda.sh"
+  conda env list
+else
+  echo "!!! conda 명령이 없음 - PATH 문제이거나 conda 모듈을 먼저 load 해야 함"
+  echo "    (KSC에는 conda/pytorch_2.9.1_cuda12 모듈도 있음)"
+fi
+
+echo "=============== 5) 계산 노드 네트워크 ==============="
+# 계산 노드에서 pip install 이 되는지 미리 확인. 안 되면 모든 설치를
+# 로그인 노드에서 끝내둬야 한다 (PBS 스크립트 안의 pip install 줄 제거 대상).
+timeout 20 curl -sS -o /dev/null -w "pypi.org 응답코드: %{http_code}\n" https://pypi.org/simple/ \
+  || echo "!!! 계산 노드에서 외부 네트워크 불가 -> 설치는 전부 로그인 노드에서 할 것"
+
+echo "=============== 6) 프레임워크 GPU 인식 ==============="
+# 만들어 둔 env 이름에 맞게 아래 줄들을 조정할 것.
+for ENVNAME in tabfm mole unimol; do
+  if conda env list 2>/dev/null | grep -qE "^${ENVNAME}\s"; then
+    echo "--- ${ENVNAME} ---"
+    conda activate "$ENVNAME"
+    python -c "import torch; print('torch', torch.__version__, 'cuda빌드', torch.version.cuda, 'GPU보임:', torch.cuda.is_available(), torch.cuda.device_count())" 2>&1 | tail -1
+    python -c "import jax; print('jax devices:', jax.devices())" 2>&1 | tail -1
+    conda deactivate
+  else
+    echo "--- ${ENVNAME}: 환경 없음 (아직 안 만들었으면 정상) ---"
+  fi
+done
+
+echo "=============== 완료 ==============="
+date

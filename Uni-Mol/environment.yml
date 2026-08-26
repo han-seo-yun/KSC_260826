@@ -1,0 +1,66 @@
+# =============================================================================
+# Uni-Mol (deepmodeling/Uni-Mol) — reproducible local dev environment
+#
+# Verified on: macOS arm64 (Apple Silicon), no GPU, conda (miniconda3), 2026-08-12
+# Target env name: unimol
+#
+# This repo has multiple sub-projects. This environment.yml covers the two
+# sub-projects that were verified to work CPU-only on a laptop:
+#   1) unimol_tools/   -> pip package "unimol_tools" (recommended entry point;
+#                          Uni-Core dependency was REMOVED from unimol_tools
+#                          since v0.1.0, 2024-06-20). Pure PyTorch + RDKit.
+#   2) unimol/          -> the original fairseq-style pretraining/finetuning
+#                          code, which depends on Uni-Core (dptech-corp/Uni-Core).
+#                          Uni-Core's setup.py DISABLES its custom CUDA
+#                          extension kernels by default (DISABLE_CUDA_EXTENSION
+#                          = True unless you pass --enable-cuda-ext), so a
+#                          CPU-only install and a tiny CPU smoke run ARE
+#                          possible — just not real-scale training.
+#
+# NOT covered / NOT verified locally (require GPU and/or were out of scope):
+#   - unimol_plus/, unimol2/, unimol_docking_v2/  (not explored in this pass)
+#   - Any real pretraining/finetuning at scale (needs multi-GPU + --fp16)
+#   - Uni-Core's fused CUDA kernels (fused_layer_norm, fused_softmax, etc.)
+#     which require --enable-cuda-ext and an NVIDIA GPU + matching CUDA
+#     toolkit. On this Mac they printed "... is not installed corrected"
+#     warnings and silently fell back to pure-PyTorch ops. That fallback is
+#     fine for tiny smoke tests but is NOT how you should run production
+#     training (too slow, and --fp16 in the README scripts requires CUDA).
+# =============================================================================
+
+name: unimol
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      # --- Core: verified CPU-only on macOS arm64 ---
+      # PyTorch CPU/MPS build (on Linux/KSC, replace with the CUDA build that
+      # matches the cluster's `module load cuda/<version>`, see README.md below)
+      - torch
+      - numpy<2.0.0
+      - pandas<2.0.0
+      - scikit-learn
+      - numba
+      - tqdm
+      - joblib
+      - pyyaml
+      - addict
+      - rdkit                 # unimol_tools requirement (no version pin upstream)
+      - huggingface_hub       # needed for auto-download of pretrained weights
+      # unimol_tools itself: install from the cloned repo (no released wheel
+      # pin needed; this repo vendors unimol_tools/ as of the June 2025 cutoff)
+      #   cd unimol_tools && python setup.py install
+
+      # --- Optional: raw unimol/ + Uni-Core, CPU-only smoke test only ---
+      # rdkit-pypi==2022.9.3  # pinned version required by unimol/README.md
+      # lmdb
+      # ml_collections
+      # tensorboardX
+      # wandb
+      # tokenizers
+      # Uni-Core is NOT on PyPI under a normal name; install from source:
+      #   git clone https://github.com/dptech-corp/Uni-Core.git
+      #   cd Uni-Core && python setup.py install   # CPU-only (no --enable-cuda-ext)

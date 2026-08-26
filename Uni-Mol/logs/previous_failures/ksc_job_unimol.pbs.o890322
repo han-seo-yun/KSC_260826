@@ -1,0 +1,5 @@
+==========================================
+SLURM_JOB_ID = 890322
+SLURM_NODELIST = gpu25
+==========================================
+CUDA available: True Tesla V100-PCIE-16GB

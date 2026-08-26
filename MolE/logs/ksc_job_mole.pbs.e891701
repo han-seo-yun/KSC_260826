@@ -1,0 +1,4 @@
+[00;33m[Deprecation Warning][0m cuda/12.1 is deprecated.
+[00;33m[Redirecting][0m Loading cuda/12.4.1 instead.
+/scratch/r978a07/envs/mole/lib/python3.8/site-packages/torch_geometric/deprecation.py:26: UserWarning: 'data.DataLoader' is deprecated, use 'loader.DataLoader' instead
+  warnings.warn(out)

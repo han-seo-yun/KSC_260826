@@ -1,0 +1,96 @@
+#!/bin/bash
+# =============================================================================
+# 이 시스템(KISTI Neuron)은 순수 Slurm이다. `qsub`는 sbatch를 그대로 호출만
+# 하고 `#PBS` 지시어는 해석하지 않으므로(그냥 주석으로 무시됨) `#SBATCH`로 쓴다.
+# (showappl 확인, 2026-08-21: --comment="field=<field>;appl=<program>" 필수)
+#
+# *** 2026-08-25 교수님 확인: 이 프로젝트는 처음부터의 사전학습(Uni-Core,
+# 114.76GB 데이터)이 아니라 "이미 학습된 Uni-Mol 모델을 가져와서 데이터에 맞게
+# 활용"하는 fine-tuning 방향으로 확정됨. 그래서 Uni-Core가 필요 없는
+# unimol_tools(HuggingFace 자동 다운로드, pip install만으로 됨) 경로를 쓴다.
+# KSC GPU에서 5-fold 학습+검증 정상 완주 확인 (job 891712, 2026-08-24).
+#
+# 사전 준비 (로그인 노드에서 1회):
+#   source /apps/applications/Miniconda/25.11.1/etc/profile.d/conda.sh
+#   conda create -p /scratch/$USER/envs/unimol_tools python=3.10 -y
+#   conda activate /scratch/$USER/envs/unimol_tools
+#   pip install unimol_tools huggingface_hub
+#   # *** 버전 미지정 `pip install torch`는 최신 cu130 빌드를 받는데, 이 빌드는
+#   # compute capability 7.0(V100)용 커널이 빠져 있어 학습 중
+#   # "CUDA error: no kernel image is available for execution on the device"로
+#   # 죽는다 (2026-08-23 job 890322 실제 확인). V100은 cu121 빌드로 설치할 것.
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+#   python -c "from unimol_tools import MolTrain"   # import만 되는지 로그인 노드에서 확인
+#
+#   # *** 이미 (A) 방식대로 만든 환경이 있고 torch가 cu130으로 깔려 있다면,
+#   # 환경을 새로 만들지 말고 torch만 재설치하면 된다 (KSC 로그인 노드에서):
+#   #   conda activate /scratch/$USER/envs/unimol_tools
+#   #   pip uninstall -y torch
+#   #   pip install torch --index-url https://download.pytorch.org/whl/cu121
+#   #   python -c "import torch; print(torch.__version__)"   # +cu121 인지 확인
+# =============================================================================
+#SBATCH --job-name=unimol_tools_smoketest
+#SBATCH --partition=cas_v100_2
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --time=00:30:00
+#SBATCH --output=unimol_tools_smoketest.log
+#SBATCH --error=unimol_tools_smoketest.log
+#SBATCH --comment="field=chem;appl=pytorch"
+#SBATCH --mail-user=hsy071322@naver.com
+#SBATCH --mail-type=END,FAIL
+
+# ↓ qsub가 "Account" 관련 에러로 거부되면 아래 주석을 풀고 본인 계정값 채울 것.
+##SBATCH --account=etc
+
+set -euo pipefail
+cd "$SLURM_SUBMIT_DIR"
+
+# --- 사용자별로 바꿀 값 ------------------------------------------------------
+ENV_PREFIX="${ENV_PREFIX:-/scratch/$USER/envs/unimol_tools}"
+HF_CACHE="${HF_CACHE:-/scratch/$USER/hf_cache}"
+# ---------------------------------------------------------------------------
+
+# 1) conda 활성화
+#    *** `module load conda/pytorch_2.9.1_cuda12`는 conda 도구 자체가 아니라
+#    미리 만들어진 특정 환경의 bin/만 PATH에 얹어준다 -- conda 명령이 없다
+#    (2026-08-22 실제 확인: "conda: command not found"). conda 명령은
+#    /apps/applications/Miniconda/<버전>/bin/conda 에 실제로 존재하므로
+#    그 base를 직접 source 한다 (module load 불필요).
+CONDA_BASE="${CONDA_BASE:-/apps/applications/Miniconda/25.11.1}"
+source "$CONDA_BASE/etc/profile.d/conda.sh"
+# conda의 activate.d 훅이 set -u에 안전하지 않은 경우가 있어
+# (2026-08-22 MolE에서 MKL_INTERFACE_LAYER: unbound variable 확인)
+# activate 호출 구간만 방어적으로 set -u 해제.
+set +u
+conda activate "$ENV_PREFIX"
+set -u
+
+# 2) HuggingFace 캐시를 scratch 로 (home 쿼터 절약 + 재다운로드 방지)
+export HF_HOME="${HF_CACHE}"
+
+# 3) GPU 인식 확인
+python -c "import torch; print('CUDA available:', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else '')"
+
+# 3-1) torch.cuda.is_available()==True 여도 실제 커널이 없는 빌드일 수 있다
+# (2026-08-23 job 890322 실제 확인: V100 CC 7.0인데 torch+cu130 빌드라 학습 중
+# "no kernel image is available for execution on the device"로 죽음).
+# 실제 CUDA 연산을 한 번 돌려서 죽으면 학습 들어가기 전에 미리 잡는다.
+python - <<'PY'
+import sys, torch
+try:
+    (torch.zeros(1, device="cuda") + 1).cpu()
+except Exception as e:
+    sys.exit(
+        "!!! torch가 이 GPU용 CUDA 커널을 갖고 있지 않습니다: "
+        f"{e}\n반드시 V100(CC 7.0)을 지원하는 빌드로 재설치하세요:\n"
+        "  pip uninstall -y torch && "
+        "pip install torch --index-url https://download.pytorch.org/whl/cu121"
+    )
+print("torch CUDA 커널 정상 동작 확인")
+PY
+
+# 4) 스모크 테스트 — 사전학습 가중치 HuggingFace 자동 다운로드 + 5-fold 학습 + AUC
+python unimol_smoketest.py

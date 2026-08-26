@@ -1,0 +1,59 @@
+# LOCAL / CPU-ONLY verification environment for MolE.
+#
+# This file is a CPU-only variant of `environment.yaml`, meant for local
+# smoke-testing on machines without an NVIDIA GPU (e.g. Apple Silicon macOS).
+# It mirrors the same package versions as `environment.yaml` wherever a
+# CPU build is available, so that code that runs here has a good chance of
+# also running on the GPU cluster (KSC) once you switch back to
+# `environment.yaml`.
+#
+# Usage:
+#   conda env create -f environment_cpu.yaml
+#   conda activate mole-cpu
+#
+# IMPORTANT - differences vs environment.yaml (for KSC / GPU submission):
+#   1. No `pytorch-cuda` package and no `nvidia` channel here - this installs
+#      the CPU build of PyTorch. On KSC, use `environment.yaml` instead,
+#      which pulls `pytorch-cuda=11.8` from the `nvidia` channel to get a
+#      CUDA-enabled PyTorch build.
+#   2. `rdkit` is pinned to the same version (2022.3.3 == 2022.03.3) but is
+#      pulled from `conda-forge` instead of the `rdkit` channel, because the
+#      legacy `rdkit` channel does not publish osx-arm64 builds. conda-forge
+#      publishes the same version for both osx-arm64 and linux-64, so this
+#      does not change behavior on KSC.
+#   3. `torch_geometric` core (2.5.0) does not require `torch-scatter` /
+#      `torch-sparse` for the default `gin_concat` / `gin_noconcat` models
+#      used by pretrain.py, finetune.py, train_ml.py, gather_representation.py.
+#      They ARE required by the `gcn_concat` / `gcn_noconcat` model variants
+#      (see models/gcn_concat.py, models/gcn_noconcat.py) - note that the
+#      original environment.yaml also does not install these, so those two
+#      model variants are not reproducible out-of-the-box even on KSC. If you
+#      need them, install matching `pyg-lib`/`torch-scatter`/`torch-sparse`
+#      wheels from https://data.pyg.org/whl/ for your exact torch+cuda combo.
+#   4. `networkx` is added explicitly - dataset/dataset_subgraph.py imports
+#      it directly and it is not guaranteed as a transitive dependency.
+#
+name: mole-cpu
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch=2.2.1
+  - cpuonly
+  - rdkit=2022.03.3
+  - networkx
+  - pip
+  - pip:
+    - xgboost==1.6.2
+    - pandas==2.0.3
+    - PyYAML==6.0.1
+    - torch_geometric==2.5.0
+    - openpyxl
+    - pubchempy==1.0.4
+    - matplotlib==3.7.5
+    - seaborn==0.13.2
+    - tqdm
+    - scikit-learn==1.0.2
+    - umap-learn==0.5.5

@@ -1,0 +1,29 @@
+batch_size: 16                          # small batch size for CPU smoke test
+warm_up: 1                              # warm-up epochs
+epochs: 1                               # total number of epochs - just 1 for smoke test
+
+load_model: None                        # resume training
+eval_every_n_epochs: 1                  # validation frequency
+save_every_n_epochs: 1                  # automatic model saving frequecy
+
+init_lr: 0.0005                         # initial learning rate for Adam
+weight_decay: 0.00001                   # weight decay for Adam
+gpu: cpu                                # training device - CPU for local smoke test
+
+model_type: gin_concat                  # Pre-training strategy consisting of GNN backbone ('gin' or 'gcn') and
+                                         # representation construction ('concat' or 'noconcat')
+model:
+  num_layer: 2                          # fewer layers for a faster smoke test
+  emb_dim: 32                           # smaller representation dimension for a faster smoke test
+
+  feat_dim: 64                          # smaller output embedding dimension for a faster smoke test
+  drop_ratio: 0.0                       # dropout ratio
+  pool: add                             # readout pooling (i.e., mean/max/add)
+
+dataset:
+  num_workers: 0                        # no worker subprocesses - simplest/most portable for a local smoke test
+  valid_size: 0.1                       # ratio of validation data
+  data_path: data/pubchem_data/pubchem_200_smoketest.txt # small 200-molecule subset of the pubchem data
+
+loss:
+  l: 0.0001 # Lambda parameter

@@ -1,0 +1,17 @@
+==========================================
+SLURM_JOB_ID = 891702
+SLURM_NODELIST = gpu45
+==========================================
+python 3.11.16 | /scratch/r978a07/envs/tabfm/bin/python
+jax 0.10.2
+devices: [CudaDevice(id=0)]
+name, memory.total [MiB]
+NVIDIA A100 80GB PCIe, 81920 MiB
+GPU 확인 완료
+Running TabFM classification model... (Note: compilation and model execution may take a few minutes on first run)
+Classification predictions:
+ [[0.63943595 0.36056408]
+ [0.39316493 0.60683507]]
+Running TabFM regression model... (Note: compilation and model execution may take a few minutes on first run)
+Regression predictions:
+ [19.49729004 14.78377371]

@@ -1,0 +1,137 @@
+#!/bin/bash
+# =============================================================================
+# TabFM — KSC(Slurm) 제출 스크립트 (conda 버전)
+#
+# 이 시스템(KISTI Neuron)은 순수 Slurm이다. `qsub`는 sbatch를 그대로 호출만
+# 하고 `#PBS` 지시어는 해석하지 않으므로(그냥 주석으로 무시됨) `#SBATCH`로 쓴다.
+# (showappl 확인, 2026-08-21: --comment="field=<field>;appl=<program>" 필수)
+#
+# 사전 준비 (로그인 노드에서 1회, KSC_SETUP.md 참고):
+#   # 1) conda 확보 — 아래 둘 중 하나
+#   module load conda/pytorch_2.9.1_cuda12          # (A) KSC 모듈
+#   # 또는
+#   source /scratch/$USER/miniforge3/etc/profile.d/conda.sh   # (B) 직접 설치
+#
+#   # 2) 환경 생성 (home 쿼터가 작으므로 반드시 scratch 에 -p 로)
+#   conda create -p /scratch/$USER/envs/tabfm python=3.11 -y
+#   conda activate /scratch/$USER/envs/tabfm
+#   python -V        # <- 3.11.x 인지 반드시 확인하고 다음으로
+#
+#   # 3) 설치 + 가중치 캐시 미리 받기
+#   export PYTHONNOUSERSITE=1
+#   export HF_HOME=/scratch/$USER/hf_cache
+#   cd /scratch/$USER/ksc-models/tabfm
+#   pip install -U pip && pip install -e ".[jax,cuda]"
+#   python examples/classification_example.py
+#     -> 계산 노드는 외부 네트워크가 없을 수 있으므로 반드시 로그인 노드에서 먼저 실행
+#
+# *** 기존 설치 실패의 원인 (2026-08-13 확인) ***
+#   로그인 노드에는 conda 가 기본 PATH 에 없다. `conda create` 가 조용히 실패한
+#   상태에서 pip 를 돌리면 시스템 python3.9 로 설치가 진행되고,
+#   tabfm 은 python>=3.11 을 요구하므로
+#     ERROR: No matching distribution found for flax>=0.12.7
+#   로 끝난다. flax 문제가 아니라 파이썬 버전 문제다.
+#   -> 아래 4) 단계에서 파이썬 버전을 강제로 검사한다.
+#
+# 검증 상태: jax 0.11.0 + CudaDevice 2개 인식 확인 (glogin01, 2026-08-13)
+# 검증 상태: classification_example.py 로컬 CPU 환경(Python 3.11.15, jax 0.10.2)에서
+#   HuggingFace 134개 파일 다운로드 + 컴파일 + 예측까지 end-to-end 성공 (2026-08-21)
+# =============================================================================
+#SBATCH --job-name=tabfm_smoketest
+#SBATCH --partition=amd_a100_4
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --time=00:30:00
+#SBATCH --output=tabfm_smoketest.log
+#SBATCH --error=tabfm_smoketest.log
+#SBATCH --comment="field=chem;appl=jax"
+#SBATCH --mail-user=hsy071322@naver.com
+#SBATCH --mail-type=END,FAIL
+
+# ↓ qsub가 "Account" 관련 에러로 거부되면 아래 주석을 풀고 본인 계정값 채울 것.
+##SBATCH --account=etc
+
+set -euo pipefail
+cd "$SLURM_SUBMIT_DIR"
+
+# --- 사용자별로 바꿀 값 (다른 사람이 재사용할 때 여기 2줄만 수정) ------------
+#    *** `module load conda/pytorch_2.9.1_cuda12`는 conda 도구 자체가 아니라
+#    미리 만들어진 특정 환경의 bin/만 PATH에 얹어준다 -- conda 명령이 없다
+#    (2026-08-22 실제 확인: "conda: command not found"). conda 명령은
+#    /apps/applications/Miniconda/<버전>/bin/conda 에 실제로 존재하므로
+#    그 base를 직접 source 한다 (module load 불필요).
+CONDA_BASE="${CONDA_BASE:-/apps/applications/Miniconda/25.11.1}"
+ENV_PREFIX="${ENV_PREFIX:-/scratch/$USER/envs/tabfm}"
+HF_CACHE="${HF_CACHE:-/scratch/$USER/hf_cache}"
+# ---------------------------------------------------------------------------
+
+# 1) conda 활성화
+#    (jax[cuda12] 휠은 CUDA/cuDNN 런타임을 nvidia-*-cu12 패키지로 자체 번들하므로
+#     `module load cuda/...` 는 하지 않는다. 시스템 CUDA 와 섞이면 오히려 위험.)
+if [ -f "$CONDA_BASE/etc/profile.d/conda.sh" ]; then
+  source "$CONDA_BASE/etc/profile.d/conda.sh"
+else
+  echo "!!! $CONDA_BASE 에 conda가 없습니다. CONDA_BASE 를 실제 Miniconda 설치 경로로 맞춰주세요." >&2
+  exit 1
+fi
+
+# conda의 activate.d 훅이 set -u에 안전하지 않은 경우가 있어
+# (2026-08-22 MolE에서 MKL_INTERFACE_LAYER: unbound variable 확인)
+# activate 호출 구간만 방어적으로 set -u 해제.
+set +u
+conda activate "$ENV_PREFIX"
+set -u
+
+# 2) ~/.local 의 시스템 python3.9 패키지가 끼어드는 것을 차단
+export PYTHONNOUSERSITE=1
+
+# 3) HuggingFace 캐시를 scratch 로 (home 쿼터 절약 + 재다운로드 방지)
+export HF_HOME="${HF_CACHE}"
+
+# 3-1) V100 16GB에서 orbax 체크포인트 복원 중 OOM 발생
+# (2026-08-23 실제 확인, job 890313: RESOURCE_EXHAUSTED: Out of memory
+# while trying to allocate 1.50GiB). JAX가 기본적으로 GPU 메모리의 상당
+# 부분을 미리 통째로 preallocate해서 단편화(fragmentation)를 유발하므로,
+# 에러 로그가 직접 제안한 cuda_malloc_async 할당자로 전환 + preallocate 끔.
+export XLA_PYTHON_CLIENT_PREALLOCATE=false
+export TF_GPU_ALLOCATOR=cuda_malloc_async
+#    *** 2026-08-23 job 890877로 재확인: 위 두 옵션을 켜도 정확히 동일한 배열
+#    (icl_predictor.tf_icl.blocks.linear1.kernel.value, 24x2048x8192 float32
+#    = 정확히 1.50GiB)에서 똑같이 OOM. 단편화가 아니라 모델이 V100 16GB에
+#    실제로 안 맞는 것으로 확인돼, 파티션을 4-GPU A100 노드(amd_a100_4)로
+#    변경함 (--gres=gpu:1 이라 노드의 GPU 1개만 씀, 나머지 3개는 다른 잡용).
+
+# 4) 환경 검증 — 잘못된 파이썬으로 24시간을 날리지 않기 위한 가드
+python - <<'PY'
+import sys
+v = sys.version_info
+print("python", sys.version.split()[0], "|", sys.executable)
+if v < (3, 11):
+    sys.exit(f"!!! python {v.major}.{v.minor} 입니다. tabfm 은 3.11 이상이 필요합니다. "
+             "conda 환경이 제대로 활성화됐는지 확인하세요.")
+PY
+
+python -c "import jax; print('jax', jax.__version__); print('devices:', jax.devices())"
+nvidia-smi --query-gpu=name,memory.total --format=csv || true
+
+# 5) GPU 가 안 보이면 중단 (CPU로 조용히 도는 사고 방지)
+python - <<'PY'
+import sys, jax
+if not any(d.platform == "gpu" for d in jax.devices()):
+    sys.exit("!!! GPU가 보이지 않습니다. jax[cuda12] 설치와 노드 할당을 확인하세요.")
+print("GPU 확인 완료")
+PY
+
+# 6) 스모크 테스트 — 실제 사전학습 모델 로드 + fit/predict
+python examples/classification_example.py
+python examples/regression_example.py
+
+# 7) 단위 테스트
+PYTHONPATH=. python -m unittest tabfm.src.classifier_and_regressor_test -v
+
+# --- 실제 작업으로 바꿀 때 --------------------------------------------------
+# 위 6)/7) 을 본인의 학습·평가 스크립트로 교체하고 walltime 을 늘린다
+# (이 partition의 상한은 48:00:00). 대용량 벤치마크는 examples/tabarena_*_example.py 참고.
+# ---------------------------------------------------------------------------

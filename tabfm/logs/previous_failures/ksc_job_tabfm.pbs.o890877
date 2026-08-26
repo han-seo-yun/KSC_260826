@@ -1,0 +1,11 @@
+==========================================
+SLURM_JOB_ID = 890877
+SLURM_NODELIST = gpu25
+==========================================
+python 3.11.16 | /scratch/r978a07/envs/tabfm/bin/python
+jax 0.10.2
+devices: [CudaDevice(id=0)]
+name, memory.total [MiB]
+Tesla V100-PCIE-16GB, 16384 MiB
+GPU 확인 완료
+Running TabFM classification model... (Note: compilation and model execution may take a few minutes on first run)

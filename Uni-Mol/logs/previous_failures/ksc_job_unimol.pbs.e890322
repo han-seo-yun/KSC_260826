@@ -1,0 +1,54 @@
+/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/torch/cuda/__init__.py:422: UserWarning: Found GPU0 Tesla V100-PCIE-16GB which is of compute capability (CC) 7.0.
+The following list shows the CCs this version of PyTorch was built for and the hardware CCs it supports:
+- 7.5 which supports hardware CC >=7.5,<8.0
+- 8.0 which supports hardware CC >=8.0,<9.0 except {8.7}
+- 8.6 which supports hardware CC >=8.6,<9.0 except {8.7}
+- 9.0 which supports hardware CC >=9.0,<10.0
+- 10.0 which supports hardware CC >=10.0,<11.0 except {10.1}
+- 12.0 which supports hardware CC >=12.0,<13.0
+Your installed torch==2.13.0+cu130 does not include kernels for this GPU. Reinstall the same version against a CUDA build that does, e.g.:
+  For CUDA 12.6 use pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cu126
+  _warn_unsupported_code(d, device_cc, code_ccs)
+2026-08-23 06:41:47 | unimol_tools/weights/weighthub.py | 54 | INFO | Uni-Mol Tools | Weights will be downloaded to default directory: /scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/weights
+2026-08-23 06:41:47 | unimol_tools/weights/weighthub.py | 71 | INFO | Uni-Mol Tools | Downloading mol.dict.txt
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00,  4.20it/s]Fetching 1 files: 100%|██████████| 1/1 [00:00<00:00,  4.00it/s]
+2026-08-23 06:41:48 | unimol_tools/data/conformer.py | 185 | INFO | Uni-Mol Tools | Start generating conformers...
+0it [00:00, ?it/s]1it [00:01,  1.20s/it]20it [00:01, 16.60it/s]
+2026-08-23 06:41:50 | unimol_tools/data/conformer.py | 199 | INFO | Uni-Mol Tools | Succeeded in generating conformers for 100.00% of molecules.
+2026-08-23 06:41:50 | unimol_tools/data/conformer.py | 216 | INFO | Uni-Mol Tools | Succeeded in generating 3d conformers for 100.00% of molecules.
+2026-08-23 06:41:50 | unimol_tools/data/datahub.py | 187 | INFO | Uni-Mol Tools | conf_cache_level is 1, saving conformers to unimol_smoketest_exp/unimol_smoketest_toy_data.sdf.
+2026-08-23 06:41:50 | unimol_tools/data/datahub.py | 201 | INFO | Uni-Mol Tools | Successfully saved sdf file to unimol_smoketest_exp/unimol_smoketest_toy_data.sdf
+2026-08-23 06:41:50 | unimol_tools/data/datahub.py | 147 | INFO | Uni-Mol Tools | Split method: random, fold: 5
+2026-08-23 06:41:50 | unimol_tools/train.py | 307 | INFO | Uni-Mol Tools | Output directory already exists: unimol_smoketest_exp
+2026-08-23 06:41:50 | unimol_tools/train.py | 310 | INFO | Uni-Mol Tools | Warning: Overwrite output directory: unimol_smoketest_exp
+2026-08-23 06:41:50 | unimol_tools/tasks/trainer.py | 78 | INFO | Uni-Mol Tools | Number of GPUs available: 1
+2026-08-23 06:41:50 | unimol_tools/tasks/trainer.py | 98 | INFO | Uni-Mol Tools | Using single GPU.
+2026-08-23 06:41:50 | unimol_tools/weights/weighthub.py | 54 | INFO | Uni-Mol Tools | Weights will be downloaded to default directory: /scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/weights
+2026-08-23 06:41:50 | unimol_tools/weights/weighthub.py | 71 | INFO | Uni-Mol Tools | Downloading mol_pre_all_h_220816.pt
+Fetching 1 files:   0%|          | 0/1 [00:00<?, ?it/s]Fetching 1 files: 100%|██████████| 1/1 [00:04<00:00,  4.82s/it]Fetching 1 files: 100%|██████████| 1/1 [00:04<00:00,  4.82s/it]
+2026-08-23 06:41:57 | unimol_tools/models/unimol.py | 169 | INFO | Uni-Mol Tools | Loading pretrained weights from /scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/weights/mol_pre_all_h_220816.pt
+2026-08-23 06:41:58 | unimol_tools/models/nnmodel.py | 174 | INFO | Uni-Mol Tools | start training Uni-Mol:unimolv1
+Train:   0%|          | 0/4 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/scratch/r978a07/ksc-models/Uni-Mol/unimol_smoketest.py", line 36, in <module>
+    main()
+  File "/scratch/r978a07/ksc-models/Uni-Mol/unimol_smoketest.py", line 30, in main
+    pred = clf.fit(data=csv_path)
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/train.py", line 274, in fit
+    self.model.run()
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/models/nnmodel.py", line 223, in run
+    _y_pred = self.trainer.fit_predict(
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/tasks/trainer.py", line 212, in fit_predict
+    return self.fit_predict_wo_ddp(
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/tasks/trainer.py", line 269, in fit_predict_wo_ddp
+    total_trn_loss = self._train_one_epoch(
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/tasks/trainer.py", line 461, in _train_one_epoch
+    net_input, net_target = self.decorate_batch(batch, feature_name)
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/tasks/trainer.py", line 122, in decorate_batch
+    return self.decorate_torch_batch(batch)
+  File "/scratch/r978a07/envs/unimol_tools/lib/python3.10/site-packages/unimol_tools/tasks/trainer.py", line 162, in decorate_torch_batch
+    net_target = net_target.long()
+torch.AcceleratorError: CUDA error: no kernel image is available for execution on the device
+Search for `cudaErrorNoKernelImageForDevice' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+                                            

@@ -1,0 +1,38 @@
+# GPU environment (CUDA 12.1) - intended for GPU clusters such as KSC.
+# On a machine without an NVIDIA GPU (e.g. local development on macOS),
+# use `environment_cpu.yaml` instead and `conda activate mole-cpu`.
+# (Fixed a typo in the original `name:` field below - was "moleß".)
+#
+# CUDA 12.1 (not the upstream 11.8): KSC's module tree provides only
+# cuda/12.1 .. cuda/13.0.2 -- there is no CUDA 11.x module on the cluster
+# (`module avail cuda`, confirmed 2026-08-13). pytorch 2.2.1 ships a cu121
+# build, so 12.1 is the lowest-risk match for the pinned torch version.
+# Pair this file with `module load cuda/12.1` in ksc_job_mole.pbs.
+name: mole
+channels:
+  - pytorch
+  - nvidia
+  - rmg
+  - conda-forge
+  - rdkit
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch=2.2.1
+  - pytorch-cuda=12.1
+  - rdkit=2022.3.3
+  - networkx           # required directly by dataset/dataset_subgraph.py; not a
+                        # guaranteed transitive dependency of the packages above.
+  - pip
+  - pip:
+    - xgboost==1.6.2
+    - pandas==2.0.3
+    - PyYAML==6.0.1
+    - torch_geometric==2.5.0
+    - openpyxl
+    - pubchempy==1.0.4
+    - matplotlib==3.7.5
+    - seaborn==0.13.2
+    - tqdm
+    - scikit-learn==1.0.2
+    - umap-learn==0.5.5
